@@ -670,7 +670,7 @@
                 }
                 const link = document.createElement('div');
                 link.className = 'nav-item';
-                link.innerText = chapter.title.split('-')[0];
+                link.innerText = chapter.title;
                 link.dataset.id = chapter.id;
                 link.onclick = () => loadChapter(chapter.id);
                 sidebar.appendChild(link);
