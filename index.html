@@ -16,7 +16,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script src="index-config.js"></script>
-
     <style>
         :root {
             --bg-deep: #121212;
@@ -26,7 +25,7 @@
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-light: rgba(255, 255, 255, 0.1);
-            --glass-bg: rgba(30, 30, 30, 0.85); /* Slightly darker for mobile readability */
+            --glass-bg: rgba(30, 30, 30, 0.85);
             --font-head: 'Rubik', sans-serif;
             --font-body: 'Heebo', sans-serif;
         }
@@ -57,7 +56,6 @@
             max-width: 1200px;
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-light);
             border-radius: 16px;
             padding: 10px 20px;
@@ -77,6 +75,7 @@
             align-items: center;
             gap: 8px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
             .brand span {
@@ -85,7 +84,7 @@
 
         /* --- TICKER --- */
         #ticker-wrapper {
-            flex: 1;
+            flex: 1; /* Take up all available space between logo and login */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -93,6 +92,9 @@
             height: 30px;
             margin: 0 15px;
             position: relative;
+            /* Fade edges */
+            mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
         }
 
         #ticker-content {
@@ -119,6 +121,7 @@
             background-color: var(--accent);
             border-radius: 50%;
             display: inline-block;
+            flex-shrink: 0;
             box-shadow: 0 0 8px var(--accent);
             animation: pulse 2s infinite;
         }
@@ -138,18 +141,22 @@
         }
 
         /* --- AUTH --- */
-        .auth-controls button {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-light);
-            padding: 6px 14px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-family: var(--font-body);
-            font-weight: 500;
-            transition: all 0.3s ease;
+        .auth-controls {
+            flex-shrink: 0;
         }
+
+            .auth-controls button {
+                background: transparent;
+                color: var(--text-main);
+                border: 1px solid var(--border-light);
+                padding: 6px 14px;
+                border-radius: 50px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-family: var(--font-body);
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
 
         .user-pill {
             display: none;
@@ -170,8 +177,6 @@
                 border-radius: 50%;
                 border: 2px solid var(--accent);
                 object-fit: cover;
-                flex-shrink: 0;
-                display: block;
             }
 
             .user-pill span {
@@ -203,13 +208,11 @@
                 margin: 0 auto 30px auto;
             }
 
-        /* --- TABS --- */
         .tabs-container {
             display: flex;
             justify-content: center;
             gap: 25px;
             margin-bottom: 30px;
-            position: relative;
         }
 
         .tab-btn {
@@ -221,7 +224,7 @@
             padding-bottom: 8px;
             cursor: pointer;
             position: relative;
-            transition: color 0.3s ease;
+            transition: 0.3s;
         }
 
             .tab-btn::after {
@@ -233,7 +236,6 @@
                 height: 3px;
                 background-color: var(--accent);
                 transition: width 0.3s ease;
-                border-radius: 2px;
             }
 
             .tab-btn.active {
@@ -274,7 +276,6 @@
             }
         }
 
-        /* --- CARD --- */
         .card {
             background: #1c1c1c;
             border: 1px solid var(--border-light);
@@ -282,7 +283,6 @@
             padding: 22px;
             cursor: pointer;
             transition: transform 0.2s ease;
-            position: relative;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -292,7 +292,7 @@
             .card:active {
                 transform: scale(0.98);
             }
-        /* Mobile tap effect */
+
         .card-icon {
             font-size: 2.2rem;
             background: rgba(255, 255, 255, 0.05);
@@ -352,7 +352,7 @@
             display: flex;
             flex-direction: column;
             transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: transform 0.3s;
         }
 
             #viewer-modal.active {
@@ -390,116 +390,30 @@
             border: none;
         }
 
-        /* --- MOBILE TWEAKS --- */
+        /* ========================================= */
+        /* MOBILE OPTIMIZATIONS                      */
+        /* ========================================= */
         @media (max-width: 768px) {
             nav {
                 width: 95%;
-                padding: 12px 15px;
+                padding: 8px 10px;
                 top: 15px;
+                gap: 5px;
             }
 
-            .hero {
-                margin-top: 110px;
-            }
-
-                .hero h1 {
-                    font-size: 2.2rem;
-                }
-
-            .container {
-                padding: 0 15px;
-            }
-
-            .grid-section {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            #ticker-wrapper {
-                display: none;
-            }
-            /* --- MOBILE TWEAKS --- */
-            @media (max-width: 768px) {
-                nav {
-                    width: 95%;
-                    padding: 10px 10px; /* Reduced padding */
-                    top: 15px;
-                }
-
-                /* Allow containers to shrink so ticker fits */
-                .brand, .auth-controls {
-                    min-width: auto;
-                }
-
-                .brand {
-                    font-size: 1.1rem; /* Smaller logo font */
-                }
-
-                /* Make ticker visible and smaller */
-                #ticker-wrapper {
-                    display: flex; /* Show it! */
-                    height: 20px;
-                }
-
-                #ticker-content {
-                    font-size: 0.8rem; /* Smaller text */
-                }
-
-                .hero {
-                    margin-top: 110px;
-                }
-
-                    .hero h1 {
-                        font-size: 2.2rem;
-                    }
-
-                .container {
-                    padding: 0 15px;
-                }
-
-                .grid-section {
-                    grid-template-columns: 1fr;
-                    gap: 20px;
-                }
-
-                /* Only hide name inside user-pill, keep avatar */
-                .user-pill span#user-name {
-                    display: none;
-                }
-            }
-            /* Show only avatar on mobile */
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        /* --- MOBILE TWEAKS --- */
-        @media (max-width: 768px) {
-            nav {
-                width: 95%;
-                padding: 8px 10px; /* Tighter padding to save space */
-                top: 15px;
-                gap: 5px; /* Reduce gap between elements */
-            }
-
-            /* 1. Shrink Logo */
+            /* Logo: Smaller, no decoration */
             .brand {
-                font-size: 1rem;
-                min-width: auto; /* Allow shrinking */
-                flex-shrink: 0; /* Don't disappear */
+                font-size: 1.1rem;
+                min-width: auto;
             }
 
                 .brand span {
                     display: none;
                 }
-            /* Hide the "//" decoration on phone to save space */
 
-            /* 2. Shrink Auth Button */
+            /* Buttons: Smaller */
             .auth-controls {
                 min-width: auto;
-                flex-shrink: 0;
             }
 
                 .auth-controls button {
@@ -507,25 +421,19 @@
                     font-size: 0.8rem;
                 }
 
-            /* 3. Fix Ticker */
+            /* Ticker: Force Show, Shrink Text */
             #ticker-wrapper {
-                display: flex; /* Force show */
-                flex: 1; /* Take all remaining middle space */
-                margin: 0 5px;
+                display: flex !important;
                 height: 20px;
-                overflow: hidden; /* Hide overflow cleanly */
-                mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); /* Fade edges */
-                -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+                margin: 0 5px;
             }
 
             #ticker-content {
-                font-size: 0.75rem; /* Smaller text for mobile */
-                white-space: nowrap; /* Keep on one line */
-                width: 100%;
-                justify-content: center;
+                font-size: 0.8rem;
+                max-width: 100%;
             }
 
-            /* Rest of layout */
+            /* Content Layout */
             .hero {
                 margin-top: 110px;
             }
@@ -543,17 +451,28 @@
                 gap: 20px;
             }
 
-            /* User Profile Tweaks */
+            /* Hide User Name to save space */
             .user-pill {
-                padding: 2px 2px 2px 8px;
+                padding: 2px;
             }
 
                 .user-pill span#user-name {
                     display: none;
                 }
-            /* Hide name, show only face */
+
+                .user-pill span {
+                    margin-right: 0 !important;
+                    padding-left: 5px;
+                }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
+
 </head>
 <body>
 
