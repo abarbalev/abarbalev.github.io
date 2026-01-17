@@ -84,7 +84,7 @@
 
         /* --- TICKER --- */
         #ticker-wrapper {
-            flex: 1; /* Take up all available space between logo and login */
+            flex: 1; /* Take all available space in the middle */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -390,52 +390,78 @@
             border: none;
         }
 
+        /* --- FOOTER (Desktop Mode Toggle) --- */
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-light);
+        }
+
         /* ========================================= */
         /* MOBILE OPTIMIZATIONS                      */
         /* ========================================= */
         @media (max-width: 768px) {
             nav {
                 width: 95%;
-                padding: 8px 10px;
+                padding: 5px 10px; /* Tighter padding */
                 top: 15px;
                 gap: 5px;
             }
 
-            /* Logo: Smaller, no decoration */
+            /* 1. Shrink Logo but keep it visible */
             .brand {
-                font-size: 1.1rem;
-                min-width: auto;
+                font-size: 1rem;
+                flex: 0 0 auto;
             }
 
                 .brand span {
                     display: none;
                 }
+            /* Hide the decorative // */
 
-            /* Buttons: Smaller */
+            /* 2. Shrink Buttons */
             .auth-controls {
-                min-width: auto;
+                flex: 0 0 auto;
             }
 
                 .auth-controls button {
-                    padding: 5px 10px;
+                    padding: 4px 10px;
                     font-size: 0.8rem;
                 }
 
-            /* Ticker: Force Show, Shrink Text */
+            /* 3. Ticker: Make sure it has space */
             #ticker-wrapper {
-                display: flex !important;
-                height: 20px;
+                display: flex !important; /* Force visible */
+                flex: 1 1 auto; /* Take remaining space */
                 margin: 0 5px;
+                height: 20px;
             }
 
             #ticker-content {
-                font-size: 0.8rem;
-                max-width: 100%;
+                font-size: 0.75rem;
+                white-space: nowrap;
             }
 
-            /* Content Layout */
+            /* User Pill on Mobile */
+            .user-pill {
+                padding: 2px;
+            }
+
+                .user-pill span#user-name {
+                    display: none;
+                }
+
+                .user-pill span {
+                    margin: 0;
+                    padding-left: 5px;
+                }
+
+            /* Layout */
             .hero {
-                margin-top: 110px;
+                margin-top: 100px;
             }
 
                 .hero h1 {
@@ -450,20 +476,6 @@
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-
-            /* Hide User Name to save space */
-            .user-pill {
-                padding: 2px;
-            }
-
-                .user-pill span#user-name {
-                    display: none;
-                }
-
-                .user-pill span {
-                    margin-right: 0 !important;
-                    padding-left: 5px;
-                }
         }
 
         @keyframes spin {
