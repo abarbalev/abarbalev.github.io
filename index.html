@@ -415,6 +415,7 @@
             .brand {
                 font-size: 1.1rem;
                 min-width: auto;
+                flex-shrink: 0;
             }
 
                 .brand span {
@@ -424,6 +425,7 @@
             /* Buttons: Smaller */
             .auth-controls {
                 min-width: auto;
+                flex-shrink: 0;
             }
 
                 .auth-controls button {
@@ -436,6 +438,8 @@
                 display: flex !important;
                 height: 20px;
                 margin: 0 5px;
+                flex: 1; /* Allow it to grow */
+                width: auto; /* Override fixed widths if any */
             }
 
             #ticker-content {
