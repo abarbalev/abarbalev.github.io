@@ -1,0 +1,738 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>הסיכומים של לב</title>
+    <link rel="icon" type="image/x-icon" href="/bible_icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@400;700&family=Rubik:wght@400;600;800&family=Secular+One&display=swap" rel="stylesheet">
+
+    <script src="bible-config.js"></script>
+
+    <style>
+        :root {
+            --bg-deep: #121212;
+            --bg-surface: #1e1e1e;
+            --accent: #fbbf24;
+            --accent-glow: rgba(251, 191, 36, 0.3);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-light: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(30, 30, 30, 0.85);
+            --highlight-color: rgba(251, 191, 36, 0.25);
+            --verse-num-color: #fbbf24;
+            --font-head: 'Rubik', sans-serif;
+            --font-body: 'Heebo', sans-serif;
+            --font-bible: 'Frank Ruhl Libre', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 10% 20%, rgba(251, 191, 36, 0.05) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 20;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-text {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .logo-sub {
+            display: none;
+        }
+        /* Hide sub on mobile */
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-light);
+            padding: 6px 12px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.05);
+        }
+
+            .back-btn span {
+                display: none;
+            }
+        /* Hide text on small mobile */
+        @media (min-width: 400px) {
+            .back-btn span {
+                display: inline;
+            }
+        }
+
+        /* --- MOBILE MENU BUTTON --- */
+        #mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-head);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* --- LAYOUT --- */
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        aside::-webkit-scrollbar,
+        .text-panel::-webkit-scrollbar,
+        .questions-panel::-webkit-scrollbar,
+        main::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 2. For Firefox, IE, Edge */
+        aside, .text-panel, .questions-panel, main, body {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 280px;
+            background: var(--bg-surface);
+            border-left: 1px solid var(--border-light);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 2rem;
+            z-index: 50;
+        }
+
+        .category-header {
+            background: rgba(30,30,30,0.95);
+            padding: 15px 20px;
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-item {
+            padding: 14px 20px;
+            cursor: pointer;
+            border-right: 3px solid transparent;
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+            .nav-item.active {
+                background-color: rgba(251, 191, 36, 0.05);
+                color: white;
+                border-right-color: var(--accent);
+                font-weight: 700;
+            }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 55% 45%;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        /* --- BIBLE TEXT --- */
+        .text-panel {
+            padding: 3rem;
+            overflow-y: auto;
+            background-color: #161616;
+            border-left: 1px solid var(--border-light);
+            scroll-behavior: smooth;
+        }
+
+        .bible-content {
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .chapter-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-family: var(--font-bible);
+            position: relative;
+            display: inline-block;
+        }
+
+            .chapter-title::after {
+                content: '';
+                display: block;
+                width: 50px;
+                height: 3px;
+                background: var(--accent);
+                margin-top: 8px;
+            }
+
+        .bible-text {
+            font-family: var(--font-bible);
+            font-size: 1.5rem;
+            line-height: 2.2;
+            text-align: justify;
+            white-space: pre-wrap;
+            color: #d1d5db;
+            padding-left: 10px;
+        }
+
+        .verse-span {
+            border-radius: 4px;
+            padding: 2px 0;
+            transition: background-color 0.4s ease;
+        }
+
+            .verse-span.highlighted {
+                background-color: var(--highlight-color);
+                color: white;
+            }
+
+        .verse-num {
+            font-family: 'Secular One', sans-serif;
+            font-weight: 700;
+            color: var(--verse-num-color);
+            font-size: 0.9rem;
+            margin-left: 6px;
+            user-select: none;
+        }
+
+        /* --- QUESTIONS --- */
+        .questions-panel {
+            padding: 3rem;
+            overflow-y: auto;
+            background-color: var(--bg-deep);
+            direction: rtl;
+        }
+
+        .questions-header {
+            font-size: 1.4rem;
+            font-family: var(--font-head);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .question-card {
+            background: #1c1c1c;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            animation: slideUp 0.5s ease;
+        }
+
+        .q-main-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+            line-height: 1.5;
+        }
+
+        .sub-q {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            background: rgba(255,255,255,0.03);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-right: 3px solid var(--border-light);
+            cursor: pointer;
+        }
+
+            .sub-q.active-q {
+                border-right-color: var(--accent);
+                background: rgba(251, 191, 36, 0.05);
+            }
+
+        .answer-btn {
+            display: inline-block;
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .answer-box {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            border: 1px dashed rgba(16, 185, 129, 0.4);
+            color: #6ee7b7;
+            line-height: 1.5;
+        }
+
+            .answer-box.visible {
+                display: block;
+                animation: fadeIn 0.4s ease;
+            }
+
+        /* --- OVERLAY FOR MOBILE MENU --- */
+        #menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 40;
+            backdrop-filter: blur(2px);
+        }
+
+        /* --- RESPONSIVE MAGIC --- */
+        @media (max-width: 900px) {
+            header {
+                padding: 0 15px;
+            }
+
+            .logo-sub {
+                display: none;
+            }
+
+            #mobile-menu-btn {
+                display: block;
+            }
+
+            /* Hide sidebar by default on mobile */
+            aside {
+                position: fixed;
+                top: 60px;
+                right: -100%;
+                width: 75%;
+                height: calc(100% - 60px);
+                transition: right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+            }
+
+                aside.open {
+                    right: 0;
+                }
+
+            #menu-overlay.open {
+                display: block;
+            }
+
+            /* Layout Change: Stack Vertical */
+            main {
+                display: block;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .text-panel {
+                height: auto;
+                min-height: 50vh;
+                overflow: visible;
+                padding: 20px;
+                border-bottom: 1px solid var(--border-light);
+            }
+
+            .bible-text {
+                font-size: 1.2rem;
+                line-height: 1.8;
+                padding-left: 0;
+            }
+
+            .chapter-title {
+                font-size: 1.6rem;
+                margin-bottom: 1rem;
+            }
+
+            .questions-panel {
+                height: auto;
+                overflow: visible;
+                padding: 20px;
+                padding-bottom: 80px;
+            }
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #111;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-muted);
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8rem;
+            font-family: var(--font-head);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            z-index: 30;
+            position: fixed;
+            bottom: 0;
+            width: 100%; /* Fixed footer on mobile looks nice */
+        }
+
+        /* --- LOADER --- */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-deep);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div style="margin-top:15px; font-weight:500; color:var(--text-muted);">טוען את החומר...</div>
+    </div>
+
+    <div id="menu-overlay" onclick="toggleMenu()"></div>
+
+    <header>
+        <div class="header-right">
+            <div class="brand-container">
+                <div class="logo-text">בגרות בתנ״ך</div>
+                <div class="logo-sub">הכנה לבגרות תשפ״ו // לב אברבנאל</div>
+            </div>
+        </div>
+
+        <div class="header-left">
+            <button id="mobile-menu-btn" onclick="toggleMenu()">☰ פרקים</button>
+            <a href="index.html" class="back-btn">
+                <span>חזרה לראשי</span> ↩
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside id="sidebar"></aside>
+
+        <main>
+            <div class="text-panel">
+                <div class="bible-content" id="bible-content"></div>
+            </div>
+
+            <div class="questions-panel">
+                <div class="questions-header">שאלות לתרגול</div>
+                <div id="questions-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <span>מערכת למידה אישית</span>
+        <span style="font-size: 0.7rem; color: var(--accent);">//</span>
+        <span>נבנה ע״י לב</span>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+        // CONFIG (Ensure bible-config.js is correct or paste keys here)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlAJu_L2xKtxb21HDByXwRVZEQhEeAgW4",
+            authDomain: "bagrut-bible.firebaseapp.com",
+            projectId: "bagrut-bible",
+            storageBucket: "bagrut-bible.firebasestorage.app",
+            messagingSenderId: "4724909210",
+            appId: "1:4724909210:web:bbca1e6b68a658c6066b23"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const sidebar = document.getElementById('sidebar');
+        const bibleContent = document.getElementById('bible-content');
+        const questionsList = document.getElementById('questions-list');
+        const loader = document.getElementById('loader');
+        let chaptersDB = [];
+
+        // --- MOBILE MENU LOGIC ---
+        window.toggleMenu = function () {
+            const aside = document.getElementById('sidebar');
+            const overlay = document.getElementById('menu-overlay');
+            aside.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        // --- COMPLETION LOGIC ---
+        window.toggleChapterCompletion = async function (chapterId) {
+            if (!auth.currentUser) return;
+            const checkbox = document.getElementById('mark-done-btn');
+            try {
+                await setDoc(doc(db, "users", auth.currentUser.uid, "progress", chapterId), {
+                    completed: checkbox.checked, timestamp: new Date()
+                }, { merge: true });
+            } catch (e) { console.error(e); }
+        }
+
+        function formatBibleText(rawText) {
+            if (!rawText) return "";
+            const regex = /(^|\s)([א-ת]{1,3})[']?(\s)/g;
+            let html = rawText.replace(regex, (match, prefix, letter, suffix) => {
+                let vNum = textToGematria(letter);
+                return `</span>${prefix}<span id="v-${vNum}" class="verse-span"><span class="verse-num">${letter}</span>${suffix}`;
+            });
+            return '<span class="verse-span">' + html + '</span>';
+        }
+
+        const hebrewMap = { 'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9, 'י': 10, 'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80, 'צ': 90, 'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400 };
+        function textToGematria(str) {
+            let clean = str.replace(/['"]/g, '').trim();
+            let sum = 0;
+            for (let char of clean) { if (hebrewMap[char]) sum += hebrewMap[char]; }
+            return sum;
+        }
+
+        window.toggleAnswer = function (btn) {
+            const box = btn.nextElementSibling;
+            if (box.classList.contains('visible')) {
+                box.classList.remove('visible'); btn.innerText = "הצג תשובה";
+            } else {
+                box.classList.add('visible'); btn.innerText = "הסתר תשובה";
+            }
+        }
+
+        window.highlightVerses = function (versesArray, element) {
+            document.querySelectorAll('.verse-span').forEach(el => el.classList.remove('highlighted'));
+            document.querySelectorAll('.sub-q').forEach(el => el.classList.remove('active-q'));
+            if (element) element.classList.add('active-q');
+            if (versesArray && Array.isArray(versesArray)) {
+                versesArray.forEach(num => {
+                    const vEl = document.getElementById(`v-${num}`);
+                    if (vEl) {
+                        vEl.classList.add('highlighted');
+                        if (num === versesArray[0]) vEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
+        }
+
+        async function initApp() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "chapters"));
+                chaptersDB = [];
+                querySnapshot.forEach((doc) => { chaptersDB.push({ id: doc.id, ...doc.data() }); });
+                chaptersDB.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+
+                if (chaptersDB.length > 0) {
+                    renderSidebar();
+                    loadChapter(chaptersDB[0].id);
+                }
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            } catch (error) { console.error(error); loader.innerHTML = "<div style='color:#ef4444'>שגיאה בטעינה</div>"; }
+        }
+
+        function renderSidebar() {
+            const categories = { jacob: "סיפורי יעקב", joseph: "סיפורי יוסף" };
+            let currentCategory = "";
+            sidebar.innerHTML = ""; // Clear for re-render
+
+            chaptersDB.forEach(chapter => {
+                if (chapter.category !== currentCategory) {
+                    currentCategory = chapter.category;
+                    const header = document.createElement('div');
+                    header.className = 'category-header';
+                    header.innerText = categories[currentCategory] || "כללי";
+                    sidebar.appendChild(header);
+                }
+                const link = document.createElement('div');
+                link.className = 'nav-item';
+                link.innerText = chapter.title;
+                link.dataset.id = chapter.id;
+                link.onclick = () => {
+                    loadChapter(chapter.id);
+                    if (window.innerWidth <= 900) window.toggleMenu(); // Close menu on mobile click
+                };
+                sidebar.appendChild(link);
+            });
+        }
+
+        async function loadChapter(id) {
+            const chapter = chaptersDB.find(c => c.id === id);
+            if (!chapter) return;
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const activeBtn = document.querySelector(`.nav-item[data-id="${id}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // --- RENDER TEXT ---
+            // We check for user to show the "Mark Done" box
+            const showCheck = auth.currentUser ? 'flex' : 'none';
+
+            bibleContent.innerHTML = `
+                    <div style="animation: fadeIn 0.5s ease">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                            <div class="chapter-title" style="margin-bottom:0;">${chapter.title}</div>
+                            <label style="display:${showCheck}; align-items:center; gap:8px; cursor:pointer; background:rgba(255,255,255,0.05); padding:6px 12px; border-radius:20px; border:1px solid var(--border-light);">
+                                <input type="checkbox" id="mark-done-btn" onchange="toggleChapterCompletion('${id}')">
+                                <span style="font-size:0.85rem;">סיימתי</span>
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 2rem; width: 50px; height: 3px; background: var(--accent); margin-top:10px;"></div>
+                        <div class="bible-text">${formatBibleText(chapter.text)}</div>
+                    </div>`;
+
+            // --- CHECK PROGRESS ---
+            if (auth.currentUser) {
+                const docSnap = await getDoc(doc(db, "users", auth.currentUser.uid, "progress", id));
+                if (docSnap.exists() && docSnap.data().completed) {
+                    document.getElementById('mark-done-btn').checked = true;
+                }
+            }
+
+            // --- RENDER QUESTIONS ---
+            if (!chapter.questions || chapter.questions.length === 0) {
+                questionsList.innerHTML = `<div style="color:#888; text-align:center; padding:20px;">אין שאלות לפרק זה עדיין</div>`;
+            } else {
+                let qHTML = "";
+                chapter.questions.forEach((qItem, idx) => {
+                    if (qItem.type === 'main') {
+                        let subs = "";
+                        if (qItem.subItems) {
+                            qItem.subItems.forEach(sub => {
+                                const versesJson = JSON.stringify(sub.verses || []);
+                                subs += `
+                                        <div class="sub-q" onclick='highlightVerses(${versesJson}, this)'>
+                                            <div style="font-weight:700; color:white; margin-bottom:5px;">שאלה (${sub.number})</div>
+                                            <div style="line-height:1.5; color:#d1d5db;">${sub.text}</div>
+                                            <button class="answer-btn" onclick="event.stopPropagation(); toggleAnswer(this)">הצג תשובה</button>
+                                            <div class="answer-box">${sub.answer || "אין תשובה זמינה כרגע."}</div>
+                                        </div>`;
+                            });
+                        }
+                        qHTML += `
+                                <div class="question-card" style="animation-delay: ${idx * 0.1}s">
+                                    <div class="q-main-text">${qItem.text}</div>
+                                    ${subs}
+                                </div>`;
+                    }
+                });
+                questionsList.innerHTML = qHTML;
+            }
+        }
+
+        initApp();
+    </script>
+</body>
+</html>

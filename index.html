@@ -1,487 +1,268 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>הכנה לבגרות בתנ״ך - לב</title>
-    <link rel="icon" type="image/x-icon" href="/bible_icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>הסיכומים של לב</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Frank+Ruhl+Libre:wght@400;700&family=Rubik:wght@400;700&family=Secular+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" type="image/x-icon" href="/icon.png">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script src="index-config.js"></script>
 
     <style>
         :root {
-            --primary-color: #2b2d42;
-            --secondary-color: #8d99ae;
-            --accent-color: #d90429;
-            --highlight-color: #fff9c4;
-            --verse-num-color: #b58300;
-            --bg-color: #f4f6f8;
-            --card-bg: #ffffff;
-            --text-main: #2b2d42;
-            --text-bible: #1a1a1a;
-            --shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
-            --shadow-hover: 0 8px 25px rgba(0,0,0,0.1);
+            --bg-deep: #121212;
+            --bg-surface: #1e1e1e;
+            --accent: #fbbf24;
+            --accent-glow: rgba(251, 191, 36, 0.3);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-light: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(30, 30, 30, 0.85); /* Slightly darker for mobile readability */
+            --font-head: 'Rubik', sans-serif;
+            --font-body: 'Heebo', sans-serif;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Heebo', sans-serif;
-            background-color: var(--bg-color);
+            font-family: var(--font-body);
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 10% 20%, rgba(251, 191, 36, 0.05) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
             color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- HEADER --- */
-        header {
-            background-color: var(--card-bg);
-            padding: 0 2rem;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--shadow-soft);
-            z-index: 20;
-            position: relative;
-        }
-
-        .brand-container {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo-text {
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            letter-spacing: -0.5px;
-        }
-
-        .logo-sub {
-            font-size: 0.8rem;
-            color: var(--accent-color);
-            font-weight: 500;
-            margin-top: -3px;
-        }
-
-        /* User Icon / Logo */
-        #user-logo {
-            height: 50px;
-            width: 50px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid var(--bg-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            cursor: pointer; /* Clickable cursor */
-        }
-
-            #user-logo:hover {
-                transform: scale(1.1) rotate(5deg);
-            }
-
-            #user-logo:active {
-                transform: scale(0.95);
-            }
-
-        /* --- SPEECH BUBBLE (For the random sentences) --- */
-        #quote-bubble {
-            display: none; /* Hidden by default */
-            position: absolute;
-            top: 75px; /* Below header */
-            left: 20px; /* Align with logo on left */
-            width: 250px;
-            background: #2b2d42;
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            border-top-left-radius: 0; /* Corner pointing to logo */
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            z-index: 1000;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-            /* Little triangle arrow */
-            #quote-bubble::before {
-                content: '';
-                position: absolute;
-                top: -8px;
-                left: 0;
-                width: 0;
-                height: 0;
-                border-left: 10px solid #2b2d42;
-                border-top: 10px solid transparent;
-                border-bottom: 0 solid transparent;
-                border-right: 10px solid transparent;
-            }
-
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8) translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        /* --- LAYOUT CONTAINER --- */
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        .questions-subtitle {
-            font-size: 0.9rem;
-            color: var(--secondary-color);
-            margin-top: -1.8rem; /* Pulls it closer to the header */
-            margin-bottom: 2rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* --- SIDEBAR --- */
-        aside {
-            width: 280px;
-            background: #fff;
-            border-left: 1px solid #e0e0e0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            padding-bottom: 2rem;
-            z-index: 10;
-        }
-
-        .category-header {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            font-family: 'Rubik', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--secondary-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            backdrop-filter: blur(5px);
-            background: rgba(248, 249, 250, 0.95);
-        }
-
-        .nav-item {
-            padding: 14px 25px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-right: 4px solid transparent;
-            font-weight: 500;
-            color: #555;
-            position: relative;
-            overflow: hidden;
-        }
-
-            .nav-item:hover {
-                background-color: #f8f9fa;
-                color: var(--primary-color);
-                padding-right: 30px;
-            }
-
-            .nav-item.active {
-                background-color: #edf2ff;
-                color: var(--primary-color);
-                border-right-color: var(--accent-color);
-                font-weight: 700;
-            }
-
-        /* --- MAIN CONTENT --- */
-        main {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 55% 45%;
-            gap: 0;
-            overflow: hidden;
-        }
-
-        /* TEXT PANEL */
-        .text-panel {
-            padding: 3rem;
-            overflow-y: auto;
-            background-color: #fdfbf7;
-            border-left: 1px solid #e0e0e0;
-            scroll-behavior: smooth;
-        }
-
-        .bible-content {
-            max-width: 850px;
-            margin: 0 auto;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .chapter-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: var(--primary-color);
-            font-family: 'Frank Ruhl Libre', serif;
-            position: relative;
-            display: inline-block;
-        }
-
-            .chapter-title::after {
-                content: '';
-                display: block;
-                width: 60px;
-                height: 4px;
-                background: var(--accent-color);
-                margin-top: 10px;
-                border-radius: 2px;
-            }
-
-        .bible-text {
-            font-family: 'Frank Ruhl Libre', serif;
-            font-size: 1.6rem;
-            line-height: 2.3;
-            text-align: justify;
-            white-space: pre-wrap;
-            color: var(--text-bible);
-            padding-left: 20px;
-        }
-
-        .verse-span {
-            border-radius: 4px;
-            padding: 2px 0;
-            transition: background-color 0.4s ease;
-        }
-
-            .verse-span.highlighted {
-                background-color: var(--highlight-color);
-                box-shadow: 0 0 0 2px var(--highlight-color);
-            }
-
-        .verse-num {
-            font-family: 'Secular One', sans-serif;
-            font-weight: 700;
-            color: var(--verse-num-color);
-            font-size: 1.1rem;
-            margin-left: 8px;
-            user-select: none;
-        }
-
-        /* QUESTIONS PANEL */
-        .questions-panel {
-            padding: 3rem;
-            overflow-y: auto;
-            background-color: var(--bg-color);
-            direction: rtl;
-        }
-
-        .questions-header {
-            font-size: 1.6rem;
-            font-family: 'Rubik', sans-serif;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--primary-color);
-        }
-
-            .questions-header::before {
-                content: '';
-                width: 6px;
-                height: 35px;
-                background: var(--accent-color);
-                display: block;
-                border-radius: 10px;
-            }
-
-        .question-card {
-            background: white;
+        /* --- NAVBAR --- */
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-light);
             border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid transparent;
-            direction: rtl;
-            text-align: right;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: slideUp 0.5s ease forwards;
-        }
-
-            .question-card:hover {
-                transform: translateY(-5px);
-                box-shadow: var(--shadow-hover);
-                border-color: rgba(217, 4, 41, 0.1);
-            }
-
-        .q-main-text {
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #f0f0f0;
-            line-height: 1.6;
-        }
-
-        .sub-q {
-            font-size: 1rem;
-            margin-bottom: 15px;
-            color: #4a4a4a;
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 12px;
-            border-right: 4px solid #e0e0e0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-            .sub-q:hover {
-                background: #fff;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            }
-
-            .sub-q.active-q {
-                border-right-color: var(--accent-color);
-                background: #fff;
-                box-shadow: 0 4px 12px rgba(217, 4, 41, 0.15);
-            }
-
-        .answer-btn {
-            display: inline-block;
-            margin-top: 12px;
-            background: white;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-size: 0.85rem;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-            .answer-btn:hover {
-                background: var(--primary-color);
-                color: white;
-                transform: scale(1.05);
-            }
-
-        .answer-box {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background: #f0fff4;
-            border-radius: 8px;
-            border: 1px dashed #4ade80;
-            color: #166534;
-            font-weight: 500;
-            line-height: 1.6;
-        }
-
-            .answer-box.visible {
-                display: block;
-                animation: fadeIn 0.4s ease;
-            }
-
-        /* FOOTER */
-        footer {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 10px;
-            font-size: 0.9rem;
-            font-family: 'Rubik', sans-serif;
+            padding: 10px 20px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .brand {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: white;
+            display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-            z-index: 30;
+            white-space: nowrap;
         }
 
-            footer span.r-icon {
-                font-size: 0.7rem;
-                vertical-align: super;
-                color: var(--accent-color);
+            .brand span {
+                color: var(--accent);
             }
 
-        /* SCROLLBARS */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8;
-            }
-
-        /* LOADER & ANIMATIONS */
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 1000;
+        /* --- TICKER --- */
+        #ticker-wrapper {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
+            overflow: hidden;
+            height: 30px;
+            margin: 0 15px;
+            position: relative;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--accent-color);
+        #ticker-content {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease-in-out;
+            white-space: nowrap;
+        }
+
+            #ticker-content.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        .ticker-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent);
             border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.55, 0.055, 0.675, 0.19) infinite;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse 2s infinite;
         }
 
-        @keyframes spin {
+        @keyframes pulse {
             0% {
-                transform: rotate(0deg);
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
             }
 
             100% {
-                transform: rotate(360deg);
+                opacity: 0.5;
             }
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+        /* --- AUTH --- */
+        .auth-controls button {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            padding: 6px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
-        @keyframes slideUp {
+        .user-pill {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 4px 12px 4px 4px;
+            border-radius: 50px;
+        }
+
+            .user-pill.active {
+                display: flex;
+            }
+
+            .user-pill img {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                border: 2px solid var(--accent);
+                object-fit: cover;
+                flex-shrink: 0;
+                display: block;
+            }
+
+            .user-pill span {
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+
+        /* --- HERO --- */
+        .hero {
+            margin-top: 130px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+            .hero h1 {
+                font-family: var(--font-head);
+                font-size: 3rem;
+                font-weight: 800;
+                margin-bottom: 10px;
+                background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+                color: var(--text-muted);
+                max-width: 500px;
+                margin: 0 auto 30px auto;
+            }
+
+        /* --- TABS --- */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            font-weight: 500;
+            padding-bottom: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+            .tab-btn::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 3px;
+                background-color: var(--accent);
+                transition: width 0.3s ease;
+                border-radius: 2px;
+            }
+
+            .tab-btn.active {
+                color: white;
+            }
+
+                .tab-btn.active::after {
+                    width: 100%;
+                }
+
+        /* --- GRID --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 80px auto;
+            padding: 0 20px;
+        }
+
+        .grid-section {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            animation: fadeUp 0.6s ease;
+        }
+
+            .grid-section.active {
+                display: grid;
+            }
+
+        @keyframes fadeUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -492,234 +273,414 @@
                 transform: translateY(0);
             }
         }
+
+        /* --- CARD --- */
+        .card {
+            background: #1c1c1c;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 22px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+            .card:active {
+                transform: scale(0.98);
+            }
+        /* Mobile tap effect */
+        .card-icon {
+            font-size: 2.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+
+        .card h3 {
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .arrow-icon {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .card.app-card {
+            background: linear-gradient(145deg, #1c1c1c 0%, #2a2a2a 100%);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+            .card.app-card .card-icon {
+                background: rgba(251, 191, 36, 0.1);
+                color: var(--accent);
+            }
+
+        /* --- VIEWER --- */
+        #viewer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+            #viewer-modal.active {
+                transform: translateY(0);
+            }
+
+        .viewer-header {
+            height: 60px;
+            background: #111;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .close-btn {
+            background: rgba(255,0,0,0.1);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .iframe-wrapper {
+            flex: 1;
+            background: white;
+        }
+
+        iframe#doc-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- MOBILE TWEAKS --- */
+        @media (max-width: 768px) {
+            nav {
+                width: 95%;
+                padding: 12px 15px;
+                top: 15px;
+            }
+
+            .hero {
+                margin-top: 110px;
+            }
+
+                .hero h1 {
+                    font-size: 2.2rem;
+                }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .grid-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            #ticker-wrapper {
+                display: none;
+            }
+            /* --- MOBILE TWEAKS --- */
+            @media (max-width: 768px) {
+                nav {
+                    width: 95%;
+                    padding: 10px 10px; /* Reduced padding */
+                    top: 15px;
+                }
+
+                /* Allow containers to shrink so ticker fits */
+                .brand, .auth-controls {
+                    min-width: auto;
+                }
+
+                .brand {
+                    font-size: 1.1rem; /* Smaller logo font */
+                }
+
+                /* Make ticker visible and smaller */
+                #ticker-wrapper {
+                    display: flex; /* Show it! */
+                    height: 20px;
+                }
+
+                #ticker-content {
+                    font-size: 0.8rem; /* Smaller text */
+                }
+
+                .hero {
+                    margin-top: 110px;
+                }
+
+                    .hero h1 {
+                        font-size: 2.2rem;
+                    }
+
+                .container {
+                    padding: 0 15px;
+                }
+
+                .grid-section {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                /* Only hide name inside user-pill, keep avatar */
+                .user-pill span#user-name {
+                    display: none;
+                }
+            }
+            /* Show only avatar on mobile */
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner"></div>
-        <div style="margin-top:15px; font-weight:700; color:#2b2d42;">טוען את החומר...</div>
-    </div>
-
-    <div id="quote-bubble"></div>
-
-    <header>
-        <div class="brand-container">
-            <div class="logo-text">בגרות בתנ״ך - לב</div>
-            <div class="logo-sub">הכנה לבגרות תשפ״ו</div>
+    <nav>
+        <div class="brand">
+            <span>//</span> Abarbalev
         </div>
-        <img src="/bible_icon.png" alt="לוגו משתמש" class="header-user-logo" id="user-logo">
-    </header>
+
+        <div id="ticker-wrapper">
+            <div id="ticker-content">
+                <span class="ticker-dot"></span>
+                <span id="ticker-text">טוען עדכונים...</span>
+            </div>
+        </div>
+
+        <div class="auth-controls">
+            <button id="login-btn">כניסה</button>
+            <div id="user-ui" class="user-pill">
+                <img id="user-img" src="" alt="User">
+                <span id="user-name"></span>
+                <span onclick="doLogout()" style="cursor:pointer; color:#ef4444; margin-right:5px; font-size:1.1rem;">×</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>הסיכומים של לב</h1>
+        <p>כל הסיכומים, וכל היתר.</p>
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('summaries')">סיכומים</button>
+            <button class="tab-btn" onclick="switchTab('practice')">תרגול</button>
+        </div>
+    </div>
 
     <div class="container">
-        <aside id="sidebar"></aside>
-
-        <main>
-            <div class="text-panel">
-                <div class="bible-content" id="bible-content"></div>
+        <div id="summaries-container" class="grid-section active">
+            <div style="grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; gap: 15px; opacity: 0.6; padding: 40px 0;">
+                <div style="width: 30px; height: 30px; border: 3px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 1s infinite linear;"></div>
+                <span>טוען נתונים...</span>
             </div>
-            <div class="questions-panel">
-                <div class="questions-header">שאלות לתרגול</div>
+        </div>
 
-                <div class="questions-subtitle">
-                    <span></span> לחצו על השאלות כדי להדגיש את הפסוקים
-                </div>
-
-                <div id="questions-list"></div>
+        <div id="practice-container" class="grid-section">
+            <a href="bible.html" class="card app-card">
+                <div class="card-icon">📖</div>
+                <h3>הכנה לבגרות בתנ״ך</h3>
+                <p>תרגול לפי המיקוד הנוכחי</p>
+                <div class="card-footer"><span class="arrow-icon">פתח &larr;</span></div>
+            </a>
+            <div class="card" style="opacity: 0.5; border-style: dashed; cursor: default;">
+                <div class="card-icon">🔒</div>
+                <h3>בקרוב...</h3>
+                <p>פרויקטים נוספים יעלו בקרוב.</p>
             </div>
-        </main>
+        </div>
     </div>
 
-    <footer>
-        <span>לב הכין את זה</span>
-        <span class="r-icon">®</span>
-    </footer>
+    <div id="viewer-modal">
+        <div class="viewer-header">
+            <button class="close-btn" onclick="closeViewer()">סגור</button>
+            <span id="doc-title-display" style="color:white; font-weight:500; font-size:0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+            <div id="active-viewers" style="display:flex; gap:-8px;"></div>
+        </div>
+        <div class="iframe-wrapper"><iframe id="doc-frame" src=""></iframe></div>
+    </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    <script>
+    
+        try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error(e); }
+        const auth = firebase.auth();
+        const db = firebase.database();
 
-        // ==========================================
-        //  1. RANDOM SENTENCES LIST
-        // ==========================================
-        const sentences = [
-            "וַיֹּאמֶר: נְהַרְדֵּע!",
-            "וְיָגוּר זְאֵב עִם צוּר!",
-            "כְּשֶׁאַתָּה מְבֻלְבָּל: זֶרֶת אֶל-עַל!",
-            "וַיֹּאמֶר: אֵין הַמֵּעִיד עַל גִּיסָתוֹ וְכוּ'"
-        ];
+        let currentUser = null;
+        let currentDocId = null;
+        let viewersListener = null;
 
-        // LOGO CLICK LOGIC
-        const logo = document.getElementById('user-logo');
-        const bubble = document.getElementById('quote-bubble');
-        let bubbleTimeout;
+        const loginBtn = document.getElementById('login-btn');
+        const userUi = document.getElementById('user-ui');
 
-        logo.onclick = () => {
-            // Pick Random
-            const randomSentence = sentences[Math.floor(Math.random() * sentences.length)];
+        loginBtn.addEventListener('click', () => {
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert(e.message));
+        });
+        window.doLogout = () => { auth.signOut().then(() => location.reload()); }
 
-            // Show Bubble
-            bubble.innerText = randomSentence;
-            bubble.style.display = 'block';
-
-            // Reset Timer if clicked again
-            clearTimeout(bubbleTimeout);
-            bubbleTimeout = setTimeout(() => {
-                bubble.style.display = 'none';
-            }, 4000); // Disappear after 4 seconds
-        };
-
-        // ==========================================
-        //  2. FIREBASE & APP LOGIC
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyDlAJu_L2xKtxb21HDByXwRVZEQhEeAgW4",
-            authDomain: "bagrut-bible.firebaseapp.com",
-            projectId: "bagrut-bible",
-            storageBucket: "bagrut-bible.firebasestorage.app",
-            messagingSenderId: "4724909210",
-            appId: "1:4724909210:web:bbca1e6b68a658c6066b23"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const sidebar = document.getElementById('sidebar');
-        const bibleContent = document.getElementById('bible-content');
-        const questionsList = document.getElementById('questions-list');
-        const loader = document.getElementById('loader');
-        let chaptersDB = [];
-
-        // FORMATTER
-        function formatBibleText(rawText) {
-            if (!rawText) return "";
-            const regex = /(^|\s)([א-ת]{1,3})[']?(\s)/g;
-            let html = rawText.replace(regex, (match, prefix, letter, suffix) => {
-                let vNum = textToGematria(letter);
-                return `</span>${prefix}<span id="v-${vNum}" class="verse-span"><span class="verse-num">${letter}</span>${suffix}`;
-            });
-            return '<span class="verse-span">' + html + '</span>';
-        }
-
-        const hebrewMap = { 'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9, 'י': 10, 'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80, 'צ': 90, 'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400 };
-        function textToGematria(str) {
-            let clean = str.replace(/['"]/g, '').trim();
-            let sum = 0;
-            for (let char of clean) { if (hebrewMap[char]) sum += hebrewMap[char]; }
-            return sum;
-        }
-
-        // INTERACTIONS
-        window.toggleAnswer = function (btn) {
-            const box = btn.nextElementSibling;
-            if (box.classList.contains('visible')) {
-                box.classList.remove('visible');
-                btn.innerText = "הצג תשובה";
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loginBtn.style.display = 'none';
+                userUi.classList.add('active');
+                document.getElementById('user-name').innerText = user.displayName.split(' ')[0];
+                document.getElementById('user-img').src = user.photoURL;
             } else {
-                box.classList.add('visible');
-                btn.innerText = "הסתר תשובה";
+                currentUser = null;
+                loginBtn.style.display = 'block';
+                userUi.classList.remove('active');
             }
+        });
+
+        // Ticker
+        const tickerContent = document.getElementById('ticker-content');
+        const tickerText = document.getElementById('ticker-text');
+        let messages = []; let msgIndex = 0;
+
+        db.ref('messages').on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                messages = Object.values(snapshot.val());
+                startTicker();
+            } else {
+                tickerText.innerText = "ברוכים הבאים";
+                tickerContent.classList.add('visible');
+            }
+        });
+
+        function startTicker() {
+            if (messages.length === 0) return;
+            updateTicker();
+            setInterval(() => {
+                tickerContent.classList.remove('visible');
+                setTimeout(() => {
+                    msgIndex = (msgIndex + 1) % messages.length;
+                    updateTicker();
+                }, 500);
+            }, 4000);
+        }
+        function updateTicker() {
+            tickerText.innerText = messages[msgIndex];
+            tickerContent.classList.add('visible');
         }
 
-        window.highlightVerses = function (versesArray, element) {
-            document.querySelectorAll('.verse-span').forEach(el => el.classList.remove('highlighted'));
-            document.querySelectorAll('.sub-q').forEach(el => el.classList.remove('active-q'));
-            if (element) element.classList.add('active-q');
-            if (versesArray && Array.isArray(versesArray)) {
-                versesArray.forEach(num => {
-                    const vEl = document.getElementById(`v-${num}`);
-                    if (vEl) {
-                        vEl.classList.add('highlighted');
-                        if (num === versesArray[0]) {
-                            vEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.grid-section').forEach(s => s.classList.remove('active'));
+            const target = event.target || event.srcElement;
+            target.classList.add('active');
+            document.getElementById(tab + '-container').classList.add('active');
+        }
+
+        const summariesContainer = document.getElementById('summaries-container');
+        db.ref('summaries').once('value', (snapshot) => {
+            summariesContainer.innerHTML = '';
+            if (!snapshot.exists()) {
+                summariesContainer.innerHTML = '<p style="grid-column:1/-1; text-align:center; opacity:0.5; color:white;">עדיין לא עלו סיכומים.</p>';
+                return;
+            }
+            snapshot.forEach((child) => {
+                const item = child.val();
+                const key = child.key;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                        <div class="card-icon">${item.icon || '📄'}</div>
+                        <h3>${item.title}</h3>
+                        <p>לחץ לפתיחה</p>
+                        <div class="card-footer"><span class="arrow-icon">קרא &larr;</span></div>
+                    `;
+                card.onclick = () => openViewer(item, key);
+                summariesContainer.appendChild(card);
+            });
+        });
+
+        function openViewer(item, key) {
+            currentDocId = key;
+            document.getElementById('doc-title-display').innerText = item.title;
+            const modal = document.getElementById('viewer-modal');
+            const iframe = document.getElementById('doc-frame');
+
+            // Fix mobile zoom on iframe
+            const isMobile = window.innerWidth <= 768;
+            let cleanUrl = item.url || "";
+            if (cleanUrl.includes('/edit')) cleanUrl = cleanUrl.split('/edit')[0];
+            if (cleanUrl.includes('/view')) cleanUrl = cleanUrl.split('/view')[0];
+
+            iframe.src = cleanUrl + '/preview?rm=minimal';
+
+            modal.classList.add('active');
+
+            if (currentUser && currentDocId) {
+                const ref = db.ref(`viewers/${currentDocId}/${currentUser.uid}`);
+                ref.set({ name: currentUser.displayName, photo: currentUser.photoURL, timestamp: firebase.database.ServerValue.TIMESTAMP });
+                ref.onDisconnect().remove();
+            }
+            if (currentDocId) {
+                const list = document.getElementById('active-viewers');
+                viewersListener = db.ref(`viewers/${currentDocId}`).on('value', (snap) => {
+                    list.innerHTML = '';
+                    if (snap.exists()) {
+                        Object.values(snap.val()).forEach(v => {
+                            const img = document.createElement('img');
+                            img.src = v.photo; img.title = v.name;
+                            img.style.width = '24px'; img.style.height = '24px'; img.style.borderRadius = '50%'; img.style.border = '2px solid #111';
+                            list.appendChild(img);
+                        });
                     }
                 });
             }
         }
 
-        // INIT
-        async function initApp() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "chapters"));
-                chaptersDB = [];
-                querySnapshot.forEach((doc) => { chaptersDB.push({ id: doc.id, ...doc.data() }); });
-                chaptersDB.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
-
-                if (chaptersDB.length > 0) {
-                    renderSidebar();
-                    loadChapter(chaptersDB[0].id);
-                }
-                setTimeout(() => { loader.style.display = 'none'; }, 500);
-            } catch (error) {
-                console.error(error);
-                loader.innerHTML = "<div style='color:red'>שגיאה בטעינה</div>";
-            }
+        window.closeViewer = () => {
+            const modal = document.getElementById('viewer-modal');
+            const iframe = document.getElementById('doc-frame');
+            modal.classList.remove('active');
+            setTimeout(() => iframe.src = '', 300);
+            if (currentUser && currentDocId) db.ref(`viewers/${currentDocId}/${currentUser.uid}`).remove();
+            if (currentDocId && viewersListener) db.ref(`viewers/${currentDocId}`).off('value', viewersListener);
         }
-
-        function renderSidebar() {
-            const categories = { jacob: "סיפורי יעקב", joseph: "סיפורי יוסף" };
-            let currentCategory = "";
-            chaptersDB.forEach(chapter => {
-                if (chapter.category !== currentCategory) {
-                    currentCategory = chapter.category;
-                    const header = document.createElement('div');
-                    header.className = 'category-header';
-                    header.innerText = categories[currentCategory] || "כללי";
-                    sidebar.appendChild(header);
-                }
-                const link = document.createElement('div');
-                link.className = 'nav-item';
-                link.innerText = chapter.title;
-                link.dataset.id = chapter.id;
-                link.onclick = () => loadChapter(chapter.id);
-                sidebar.appendChild(link);
-            });
-        }
-
-        function loadChapter(id) {
-            const chapter = chaptersDB.find(c => c.id === id);
-            if (!chapter) return;
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            const activeBtn = document.querySelector(`.nav-item[data-id="${id}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            bibleContent.innerHTML = `
-                    <div style="animation: fadeIn 0.5s ease">
-                        <div class="chapter-title">${chapter.title}</div>
-                        <div class="bible-text">${formatBibleText(chapter.text)}</div>
-                    </div>`;
-
-            if (!chapter.questions || chapter.questions.length === 0) {
-                questionsList.innerHTML = `<div style="color:#888; text-align:center; padding:20px;">אין שאלות לפרק זה עדיין</div>`;
-            } else {
-                let qHTML = "";
-                chapter.questions.forEach((qItem, idx) => {
-                    if (qItem.type === 'main') {
-                        let subs = "";
-                        if (qItem.subItems) {
-                            qItem.subItems.forEach(sub => {
-                                const versesJson = JSON.stringify(sub.verses || []);
-                                subs += `
-                                        <div class="sub-q" onclick='highlightVerses(${versesJson}, this)'>
-                                            <div style="font-weight:700; color:#2b2d42; margin-bottom:5px;">שאלה (${sub.number})</div>
-                                            <div style="line-height:1.5">${sub.text}</div>
-                                            <button class="answer-btn" onclick="event.stopPropagation(); toggleAnswer(this)">הצג תשובה</button>
-                                            <div class="answer-box">${sub.answer || "אין תשובה זמינה כרגע."}</div>
-                                        </div>`;
-                            });
-                        }
-                        qHTML += `
-                                <div class="question-card" style="animation-delay: ${idx * 0.1}s">
-                                    <div class="q-main-text">${qItem.text}</div>
-                                    ${subs}
-                                </div>`;
-                    }
-                });
-                questionsList.innerHTML = qHTML;
-            }
-        }
-        initApp();
     </script>
 </body>
 </html>
