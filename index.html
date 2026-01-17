@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -474,6 +474,84 @@
             to {
                 transform: rotate(360deg);
             }
+        }
+        /* --- MOBILE TWEAKS --- */
+        @media (max-width: 768px) {
+            nav {
+                width: 95%;
+                padding: 8px 10px; /* Tighter padding to save space */
+                top: 15px;
+                gap: 5px; /* Reduce gap between elements */
+            }
+
+            /* 1. Shrink Logo */
+            .brand {
+                font-size: 1rem;
+                min-width: auto; /* Allow shrinking */
+                flex-shrink: 0; /* Don't disappear */
+            }
+
+                .brand span {
+                    display: none;
+                }
+            /* Hide the "//" decoration on phone to save space */
+
+            /* 2. Shrink Auth Button */
+            .auth-controls {
+                min-width: auto;
+                flex-shrink: 0;
+            }
+
+                .auth-controls button {
+                    padding: 5px 10px;
+                    font-size: 0.8rem;
+                }
+
+            /* 3. Fix Ticker */
+            #ticker-wrapper {
+                display: flex; /* Force show */
+                flex: 1; /* Take all remaining middle space */
+                margin: 0 5px;
+                height: 20px;
+                overflow: hidden; /* Hide overflow cleanly */
+                mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); /* Fade edges */
+                -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+            }
+
+            #ticker-content {
+                font-size: 0.75rem; /* Smaller text for mobile */
+                white-space: nowrap; /* Keep on one line */
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Rest of layout */
+            .hero {
+                margin-top: 110px;
+            }
+
+                .hero h1 {
+                    font-size: 2.2rem;
+                }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .grid-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            /* User Profile Tweaks */
+            .user-pill {
+                padding: 2px 2px 2px 8px;
+            }
+
+                .user-pill span#user-name {
+                    display: none;
+                }
+            /* Hide name, show only face */
         }
     </style>
 </head>
