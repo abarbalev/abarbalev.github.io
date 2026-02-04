@@ -1,0 +1,447 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אזרחות לבגרות</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/icon.png">
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --text: #f1f1f1;
+            --text-muted: #a0a0a0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Rubik', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column; /* Changed to Stack Header + Content */
+            overflow: hidden;
+        }
+
+        /* --- HEADER (New) --- */
+        header {
+            height: 60px;
+            background: #111;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .header-right {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            color: var(--highlight);
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--text-muted);
+            border: 1px solid #333;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+        }
+
+            .back-btn:hover {
+                background: var(--highlight);
+                color: white;
+                border-color: var(--highlight);
+            }
+
+        /* --- CONTENT WRAPPER (New) --- */
+        /* This keeps the sidebar and main next to each other below the header */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Layout */
+        aside {
+            width: 250px;
+            background: #0d0d15; /* Slightly darker to distinguish from header */
+            padding: 20px;
+            border-left: 1px solid #333;
+            overflow-y: auto;
+        }
+
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        /* Navigation */
+        .nav-item {
+            padding: 15px;
+            cursor: pointer;
+            color: var(--text-muted);
+            border-bottom: 1px solid #222;
+            transition: 0.3s;
+        }
+
+            .nav-item:hover, .nav-item.active {
+                color: white;
+                border-right: 3px solid var(--highlight);
+                background: rgba(255,255,255,0.05);
+            }
+
+        /* Panels */
+        .panel {
+            overflow-y: auto;
+            height: calc(100vh - 60px); /* Adjust height for header */
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* RIGHT PANEL: STIMULUS (Text) */
+        .text-panel {
+            background: #e3e3e3;
+            color: #222;
+            border-left: 4px solid var(--accent);
+            line-height: 1.8;
+        }
+
+        /* LEFT PANEL: QUESTIONS */
+        .practice-panel {
+            background: var(--bg-dark);
+        }
+
+        /* Typography */
+        h1 {
+            color: var(--highlight);
+            margin-top: 0;
+        }
+
+        h2 {
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Stimulus Block */
+        .stimulus-block {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .stimulus-title {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Questions */
+        .q-card {
+            background: #252a41;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+        }
+
+        .sub-q {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #444;
+        }
+
+            .sub-q:first-child {
+                border-top: none;
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+        .sub-q-title {
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .answer-btn {
+            background: transparent;
+            border: 1px solid var(--highlight);
+            color: var(--highlight);
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+            .answer-btn:hover {
+                background: var(--highlight);
+                color: white;
+            }
+
+        .answer-box {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(33, 150, 83, 0.15);
+            border: 1px solid #219653;
+            border-radius: 8px;
+            color: #6fcf97;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+            .answer-box.visible {
+                display: block;
+                animation: fadeIn 0.4s;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                display: block;
+                overflow-y: auto;
+            }
+
+            main {
+                display: block;
+            }
+
+            aside {
+                display: none;
+            }
+
+            .panel {
+                height: auto;
+                padding: 20px;
+                min-height: 40vh;
+            }
+
+            .text-panel {
+                border-bottom: 4px solid var(--accent);
+                border-left: none;
+            }
+
+            /* Hide logo text on small screens, keep back button */
+            .header-right span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-right">
+            <span class="header-logo">//</span>
+            <span>אזרחות לבגרות</span>
+        </div>
+        <div class="header-left">
+            <a href="index.html" class="back-btn">
+                <span>חזרה לראשי</span> ↩
+            </a>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <aside id="sidebar">
+            <div style="text-align:center; padding-bottom:20px; font-weight:bold; font-size:1.1rem; color:#666; border-bottom:1px solid #333;">רשימת נושאים</div>
+            <div id="nav-container" style="text-align:center; color:#666; margin-top:20px;">טוען נתונים...</div>
+        </aside>
+
+        <main>
+            <div class="panel text-panel">
+                <h2 style="color:#333; font-weight:800;">שאלת אירוע</h2>
+                <div id="content-display">
+                    <p>בחר נושא משמאל כדי לטעון את האירוע.</p>
+                </div>
+            </div>
+
+            <div class="panel practice-panel">
+                <h2 style="color:white; border-bottom:1px solid #444; padding-bottom:10px;">השאלות</h2>
+                <div id="questions-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlAJu_L2xKtxb21HDByXwRVZEQhEeAgW4",
+            authDomain: "bagrut-bible.firebaseapp.com",
+            projectId: "bagrut-bible",
+            storageBucket: "bagrut-bible.firebasestorage.app",
+            messagingSenderId: "4724909210",
+            appId: "1:4724909210:web:bbca1e6b68a658c6066b23"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let globalTopics = [];
+
+        function formatText(text) {
+            if (!text) return "";
+            let formatted = text.replace(/\n/g, '<br>');
+            formatted = formatted.replace(/\*([^*]+)\*/g, '<strong style="text-decoration: underline decoration-sky-500;">$1</strong>');
+            return formatted;
+        }
+
+        function formatTextDark(text) {
+            if (!text) return "";
+            let formatted = text.replace(/\n/g, '<br>');
+            formatted = formatted.replace(/\*([^*]+)\*/g, '<strong style="color: #fff; text-decoration: underline decoration-sky-500;">$1</strong>');
+            return formatted;
+        }
+
+        async function fetchTopicsFromFirebase() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "civics_topics"));
+                const fetchedData = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    fetchedData.push({
+                        id: doc.id,
+                        title: data.title || doc.id,
+                        questions: data.questions || []
+                    });
+                });
+                return fetchedData;
+            } catch (error) {
+                console.error("Error fetching topics:", error);
+                return [];
+            }
+        }
+
+        async function init() {
+            const nav = document.getElementById('nav-container');
+            globalTopics = await fetchTopicsFromFirebase();
+
+            nav.innerHTML = "";
+
+            if (globalTopics.length === 0) {
+                nav.innerHTML = "לא נמצאו נושאים.";
+                return;
+            }
+
+            globalTopics.forEach(topic => {
+                const div = document.createElement('div');
+                div.className = 'nav-item';
+                div.innerText = topic.title;
+                div.onclick = () => loadTopic(topic);
+                nav.appendChild(div);
+            });
+
+            if (globalTopics.length > 0) loadTopic(globalTopics[0]);
+        }
+
+        function loadTopic(topic) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            const contentDisplay = document.getElementById('content-display');
+            const qList = document.getElementById('questions-list');
+
+            contentDisplay.innerHTML = "";
+            qList.innerHTML = "";
+
+            if (!topic.questions || topic.questions.length === 0) {
+                contentDisplay.innerHTML = "<p>אין טקסט זמין.</p>";
+                qList.innerHTML = "<p style='color:#777'>אין שאלות לנושא זה.</p>";
+                return;
+            }
+
+            topic.questions.forEach((q, idx) => {
+                const stimulusHTML = q.stimulus
+                    ? formatText(q.stimulus)
+                    : "לשאלה זו אין קטע קריאה מצורף.";
+
+                const stimulusBlock = document.createElement('div');
+                stimulusBlock.className = 'stimulus-block';
+                stimulusBlock.innerHTML = `
+                        <div class="stimulus-title">אירוע לשאלה ${idx + 1}</div>
+                        <div>${stimulusHTML}</div>
+                    `;
+                contentDisplay.appendChild(stimulusBlock);
+
+                let subsHTML = "";
+                if (q.subItems) {
+                    q.subItems.forEach(sub => {
+                        subsHTML += `
+                            <div class="sub-q">
+                                <span class="sub-q-title">סעיף ${sub.letter}</span>
+                                <div style="margin-bottom:10px; font-size:1.05rem;">${formatTextDark(sub.question)}</div>
+                                <button class="answer-btn" onclick="toggleAns(this)">הצג תשובה</button>
+                                <div class="answer-box"><b>תשובה:</b><br>${formatTextDark(sub.answer)}</div>
+                            </div>`;
+                    });
+                }
+
+                const card = document.createElement('div');
+                card.className = 'q-card';
+                card.innerHTML = `<div style="color:#aaa; font-size:0.8rem; margin-bottom:10px; border-bottom:1px solid #444; padding-bottom:5px;">שאלה ${idx + 1}</div>` + subsHTML;
+                qList.appendChild(card);
+            });
+        }
+
+        window.toggleAns = function (btn) {
+            const box = btn.nextElementSibling;
+            if (box.classList.contains('visible')) {
+                box.classList.remove('visible');
+                btn.innerText = "הצג תשובה";
+            } else {
+                box.classList.add('visible');
+                btn.innerText = "הסתר תשובה";
+            }
+        }
+
+        init();
+    </script>
+
+</body>
+</html>
